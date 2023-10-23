@@ -1,0 +1,5 @@
+
+to get the coordinates of a point clicked on the screen
+
+if pg.mouse.get_pressed()[0]==True:
+    print(pg.mouse.get_pos())

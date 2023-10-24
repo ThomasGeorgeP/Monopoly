@@ -114,6 +114,8 @@ players=[]
 Name_Temp='Enter Text Here'
 current_turn=0
 
+first_roll=True
+
 draw={}
 selected_icon=None
 
@@ -207,12 +209,26 @@ while True:
 
     elif gamestate==2: #highest roll
         
+        screen.blit(textmake('Highest Roll Plays First! ',90),(100,76))
+        if current_turn==len(players):
+            
+            screen.blit(textmake('Game Loading...',100),(800,600))
+            pg.display.update()
+            time.sleep(3)
+            gamestate=10
+            continue
+            
+        elif first_roll!=True:
+            rolldice()
+            current_turn+=1
+            
+        else:
+            first_roll=False
         for i in range(len(players)):
             screen.blit(textmake(f'{players[i].display_name}: {players[i].current_roll}',70),(150,200+i*100))
             screen.blit(players[i].picture,players[i].picture.get_rect(center=(700,220+i*100)))
-        screen.blit(textmake('Highest Roll Plays First! ',90),(100,76))
-        
-        
+        pg.display.update()
+        spacecont()
         
         
         

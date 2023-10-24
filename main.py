@@ -144,6 +144,8 @@ while True:
                 collision=[i for i in range(len(icons)) if icon_rects[i].collidepoint(pg.mouse.get_pos())]
                 if collision!=[]:
                     draw[True]=collision[0]
+                elif cls_button_rect.collidepoint(pg.mouse.get_pos()):
+                    Name_Temp=''
             
 
     
@@ -175,8 +177,12 @@ while True:
         
     elif gamestate==1: #INPUTTING NAME OF PLAYERS and icons
 
-        Name_Temp_Rect=textmake(Name_Temp,100).get_rect(center=(500,450))
+        Name_Temp_Rect=textmake(Name_Temp,100).get_rect(center=(400,350))
+        cls_button=textmake('Clear',50)
+        cls_button_rect=cls_button.get_rect(center=(600,500))
+        
         screen.fill('white')
+        screen.blit(cls_button,cls_button_rect)
         pg.draw.rect(screen,(139, 178, 240),Name_Temp_Rect)
         screen.blit(textmake(f'Enter Name of Player {player_name_counter + 1}                         Choose Your Icon',80),(100,80))
         screen.blit(textmake(Name_Temp,100),Name_Temp_Rect)
@@ -201,25 +207,10 @@ while True:
 
     elif gamestate==2: #highest roll
         
-        for i in range(-1,len(players)-1):
-            screen.blit(textmake(f"{players[i].display_name} : {players[i].current_roll}",70),(100,200+(i*100)))
-            screen.blit(players[i].picture,players[i].picture.get_rect(center=(600,200+(i*100))))
-        
-        screen.blit(textmake('Highest Roll Starts First! ',80),(800,100))
-        screen.blit(textmake(f"{players[current_turn].display_name}'s Turn!",50),(1100,700))
-        current_turn+=1
-        pg.display.update()
-        spacecont()
-        if current_turn==len(players):
-            current_turn=0
-            screen.blit(textmake('Game Loading...',50),(50,700))
-            pg.display.update()
-            time.sleep(3)
-            gamestate=10
-        pg.display.update()
-        
-        screen.fill('white')
-        rolldice()
+        for i in range(len(players)):
+            screen.blit(textmake(f'{players[i].display_name}: {players[i].current_roll}',70),(150,200+i*100))
+            screen.blit(players[i].picture,players[i].picture.get_rect(center=(700,220+i*100)))
+        screen.blit(textmake('Highest Roll Plays First! ',90),(100,76))
         
         
         

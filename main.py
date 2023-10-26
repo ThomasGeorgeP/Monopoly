@@ -13,12 +13,17 @@ class User():
         
         self.index=len(players)
 
+        #essential details for later on options and community chest 
         self.money=1500
         self.no_of_houses=0
         self.no_of_hotels=0
         self.properties=[]
         self.current_roll=''
         self.double_counter=0
+
+class property():
+    pass
+    #later guys :fire:
 
 def spacecont():
     '''Makes the user click enter between each iteration.'''
@@ -40,12 +45,21 @@ def textmake(text:str='',size:int=10,font:str='Pixeltype.ttf',color:tuple=(64,64
     return y
 
 def rolldice(position=(1195, 223)):
+    global roll
     First_Dice=random.choice(dices)
     Second_Dice=random.choice(dices)    
     screen.blit(First_Dice,position)
     screen.blit(Second_Dice,(position[0]+120,position[1]))
-    roll=dices.index(First_Dice)+dices.index(Second_Dice)+2
-    players[current_turn].current_roll=(roll)
+    if gamestate!=2:
+        roll=dices.index(First_Dice)+dices.index(Second_Dice)+2
+        players[current_turn].current_roll=(roll)
+    elif gamestate==2:
+        if (dices.index(First_Dice)+dices.index(Second_Dice)+2) not in roll:
+            roll.append(dices.index(First_Dice)+dices.index(Second_Dice)+2)
+        else:
+            rolldice()
+        players[current_turn].current_roll=(roll[-1])
+        rolls[roll[-1]]=current_turn
 
 pg.init()
 
@@ -76,6 +90,7 @@ D3=pg.image.load('Dice/3_dots.png').convert_alpha()
 D4=pg.image.load('Dice/4_dots.png').convert_alpha()
 D5=pg.image.load('Dice/5_dots.png').convert_alpha()
 D6=pg.image.load('Dice/6_dots.png').convert_alpha()
+
 dices=[D1,D2,D3,D4,D5,D6]
 dices=[pg.transform.rotozoom(i,0,0.75) for i in dices]
 
@@ -115,9 +130,10 @@ Name_Temp='Enter Text Here'
 current_turn=0
 
 first_roll=True
-
+roll=[]
 draw={}
 selected_icon=None
+rolls={}
 
 #main game loop
 
@@ -215,7 +231,10 @@ while True:
             screen.blit(textmake('Game Loading...',100),(800,600))
             pg.display.update()
             time.sleep(3)
+            players=[players[i] for i in {rolls[x]:x for x in sorted(list(rolls.keys()),reverse=True)}]
+            #returns the players in the new order according to descending order of highest roll
             gamestate=10
+            roll=0
             continue
             
         elif first_roll!=True:

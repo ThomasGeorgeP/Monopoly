@@ -232,7 +232,10 @@ while True:
             pg.display.update()
             time.sleep(3)
             players=[players[i] for i in {rolls[x]:x for x in sorted(list(rolls.keys()),reverse=True)}]
+            
             #returns the players in the new order according to descending order of highest roll
+
+            [print(i.display_name) for i in players]
             gamestate=10
             roll=0
             continue

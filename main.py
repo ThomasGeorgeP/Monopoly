@@ -2,15 +2,19 @@ import pygame as pg
 from sys import exit
 import random
 import time
+import csv
 
 class User():
 
     def __init__(self,name,icon_index):
 
         self.display_name=name
-        self.picture=icons[icon_index]
-        self.pic_rect=icon_rects[icon_index]
-        
+        self.picture_root=pg.transform.rotozoom(icons[icon_index],0,0.5)
+        self.picture=pg.transform.rotozoom(icons[icon_index],0,0.5)
+        self.pic_rect=self.picture_root.get_rect(center=positions[0])
+        self.current_position=0
+        self.image_rotation=0
+
         self.index=len(players)
 
         #essential details for later on options and community chest 
@@ -20,6 +24,39 @@ class User():
         self.properties=[]
         self.current_roll=''
         self.double_counter=0
+    
+    def move(self):
+        global current_turn
+        for i in range(self.current_roll):
+            
+            players_temp=players.copy()
+            del players_temp[current_turn]
+            screen.fill('white')
+            screen.blit(root,(0,0))
+            if players[current_turn].double_counter==1:
+                screen.blit(textmake('ITS A DOUBLE! ',50),(1000,50))
+            for event in pg.event.get():
+                if event.type==pg.QUIT:
+                    exit()
+            
+            for i in players_temp:
+                screen.blit(i.picture,i.pic_rect)
+            self.current_position+=1
+            self.pic_rect=self.picture_root.get_rect(center=(positions[self.current_position]))
+
+            if self.current_position%10==0:
+                self.image_rotation+=1
+                self.picture=pg.transform.rotozoom(self.picture_root,self.image_rotation*-90,1)
+            if self.current_position%40==0:
+                self.current_position=0
+            screen.blit(self.picture,self.pic_rect)
+            screen.blit(players[current_turn].First_Dice,(1200,200))
+            screen.blit(players[current_turn].Second_Dice,(1300,200))
+            
+            time.sleep(0.5)
+            pg.display.update()
+        if players[current_turn].double_counter==1:
+            current_turn-=1
 
 class property():
     pass
@@ -45,17 +82,24 @@ def textmake(text:str='',size:int=10,font:str='Pixeltype.ttf',color:tuple=(64,64
     return y
 
 def rolldice(position=(1195, 223)):
-    global roll
-    First_Dice=random.choice(dices)
-    Second_Dice=random.choice(dices)    
-    screen.blit(First_Dice,position)
-    screen.blit(Second_Dice,(position[0]+120,position[1]))
+    global roll,current_turn
+    players[current_turn].First_Dice=random.choice(dices)
+    players[current_turn].Second_Dice=random.choice(dices)    
+    screen.blit(players[current_turn].First_Dice,position)
+    screen.blit(players[current_turn].Second_Dice,(position[0]+120,position[1]))
+    
     if gamestate!=2:
-        roll=dices.index(First_Dice)+dices.index(Second_Dice)+2
+        
+        if dices.index(players[current_turn].First_Dice)==dices.index(players[current_turn].Second_Dice):
+            players[current_turn].double_counter+=1
+            
+        else:
+            players[current_turn].double_counter=0
+        roll=dices.index(players[current_turn].First_Dice)+dices.index(players[current_turn].Second_Dice)+2
         players[current_turn].current_roll=(roll)
     elif gamestate==2:
-        if (dices.index(First_Dice)+dices.index(Second_Dice)+2) not in roll:
-            roll.append(dices.index(First_Dice)+dices.index(Second_Dice)+2)
+        if (dices.index(players[current_turn].First_Dice)+dices.index(players[current_turn].Second_Dice)+2) not in roll:
+            roll.append(dices.index(players[current_turn].First_Dice)+dices.index(players[current_turn].Second_Dice)+2)
         else:
             rolldice()
         players[current_turn].current_roll=(roll[-1])
@@ -70,7 +114,12 @@ pg.display.set_caption('MONOPOLY CANT BE PIRATED SO IM MAKING IT')
 screen.fill('white')
 root=pg.transform.rotozoom(pg.image.load('map.jpg').convert_alpha(),0,0.4)
 map=root
-
+positions=[(750, 757), (662, 760), (597, 761), (533, 763), (466, 754), 
+(400, 752), (331, 755), (266, 750), (201, 754), (136, 756), (18, 786), (40, 664), 
+(46, 596), (45, 529), (46, 466), (47, 399), (45, 338), (38, 265), (37, 206), (39, 143), 
+(40, 55), (138, 51), (210, 47), (268, 39), (336, 38), (404, 39), (474, 46), (530, 46), 
+(598, 48), (662, 48), (738, 50), (751, 139), (758, 199), (753, 266), (753, 334), (752, 395), 
+(755, 462), (754, 529), (753, 590), (756, 660)]
 nami=pg.image.load('Icons/nami.png').convert_alpha()
 arlong=pg.transform.rotozoom(pg.image.load('Icons/arlong.png').convert_alpha(),0,0.8)
 brook=pg.transform.rotozoom(pg.image.load('Icons/brook.png').convert_alpha(),0,0.8)
@@ -166,8 +215,24 @@ while True:
                     Name_Temp=''
             
 
-    
-    if gamestate==0: #INPUTTING NUMBER OF PLAYERS
+    if gamestate==10:
+        screen.fill('white')
+        screen.blit(root,(0,0))
+        [screen.blit(i.picture,i.pic_rect) for i in players]
+        screen.blit(textmake('Click Enter to Roll',50),(900,0))
+        screen.blit(textmake(f'{players[current_turn].display_name}\'s turn!',50),(900,50))
+        pg.display.update()    
+        spacecont()
+        rolldice()
+        players[current_turn].move()
+        screen.blit(players[current_turn].First_Dice,(1200,200))
+        screen.blit(players[current_turn].Second_Dice,(1300,200))
+        pg.display.update()
+        current_turn+=1
+        if current_turn==len(players):
+            current_turn=0
+
+    elif gamestate==0: #INPUTTING NUMBER OF PLAYERS
         pressed_keys=pg.key.get_pressed()
         screen.fill('white')
 
@@ -215,14 +280,6 @@ while True:
         if draw.get(True,None) not in [None,[]] and Name_Temp!='Enter Text Here':
             screen.blit(textmake('Click Enter to Continue',50),(1000,760))
 
-
-    elif gamestate==10:
-        screen.fill('white')
-        screen.blit(textmake('In Dev',100),(500,500))
-        screen.blit(root,(0,0))
-        pg.display.update()    
-        spacecont()
-
     elif gamestate==2: #highest roll
         
         screen.blit(textmake('Highest Roll Plays First! ',90),(100,76))
@@ -234,9 +291,8 @@ while True:
             players=[players[i] for i in {rolls[x]:x for x in sorted(list(rolls.keys()),reverse=True)}]
             
             #returns the players in the new order according to descending order of highest roll
-
-            [print(i.display_name) for i in players]
             gamestate=10
+            current_turn=0
             roll=0
             continue
             
@@ -248,7 +304,7 @@ while True:
             first_roll=False
         for i in range(len(players)):
             screen.blit(textmake(f'{players[i].display_name}: {players[i].current_roll}',70),(150,200+i*100))
-            screen.blit(players[i].picture,players[i].picture.get_rect(center=(700,220+i*100)))
+            screen.blit(pg.transform.rotozoom(players[i].picture,0,2),players[i].picture.get_rect(center=(700,220+i*100)))
         pg.display.update()
         spacecont()
         

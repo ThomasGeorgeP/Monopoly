@@ -33,7 +33,7 @@ class User():
             del players_temp[current_turn]
             screen.fill('white')
             screen.blit(root,(0,0))
-            if players[current_turn].double_counter==1:
+            if cp.double_counter==1:
                 screen.blit(textmake('ITS A DOUBLE! ',50),(1000,50))
             for event in pg.event.get():
                 if event.type==pg.QUIT:
@@ -42,20 +42,21 @@ class User():
             for i in players_temp:
                 screen.blit(i.picture,i.pic_rect)
             self.current_position+=1
-            self.pic_rect=self.picture_root.get_rect(center=(positions[self.current_position]))
+            
 
             if self.current_position%10==0:
                 self.image_rotation+=1
                 self.picture=pg.transform.rotozoom(self.picture_root,self.image_rotation*-90,1)
             if self.current_position%40==0:
                 self.current_position=0
+            self.pic_rect=self.picture_root.get_rect(center=(positions[self.current_position]))
             screen.blit(self.picture,self.pic_rect)
-            screen.blit(players[current_turn].First_Dice,(1200,200))
-            screen.blit(players[current_turn].Second_Dice,(1300,200))
+            screen.blit(cp.First_Dice,(1200,200))
+            screen.blit(cp.Second_Dice,(1300,200))
             
             time.sleep(0.5)
             pg.display.update()
-        if players[current_turn].double_counter==1:
+        if cp.double_counter==1:
             current_turn-=1
 
 class property():
@@ -83,26 +84,26 @@ def textmake(text:str='',size:int=10,font:str='Pixeltype.ttf',color:tuple=(64,64
 
 def rolldice(position=(1195, 223)):
     global roll,current_turn
-    players[current_turn].First_Dice=random.choice(dices)
-    players[current_turn].Second_Dice=random.choice(dices)    
-    screen.blit(players[current_turn].First_Dice,position)
-    screen.blit(players[current_turn].Second_Dice,(position[0]+120,position[1]))
+    cp.First_Dice=random.choice(dices)
+    cp.Second_Dice=random.choice(dices)    
+    screen.blit(cp.First_Dice,position)
+    screen.blit(cp.Second_Dice,(position[0]+120,position[1]))
     
     if gamestate!=2:
         
-        if dices.index(players[current_turn].First_Dice)==dices.index(players[current_turn].Second_Dice):
-            players[current_turn].double_counter+=1
+        if dices.index(cp.First_Dice)==dices.index(cp.Second_Dice):
+            cp.double_counter+=1
             
         else:
-            players[current_turn].double_counter=0
-        roll=dices.index(players[current_turn].First_Dice)+dices.index(players[current_turn].Second_Dice)+2
-        players[current_turn].current_roll=(roll)
+            cp.double_counter=0
+        roll=dices.index(cp.First_Dice)+dices.index(cp.Second_Dice)+2
+        cp.current_roll=(roll)
     elif gamestate==2:
-        if (dices.index(players[current_turn].First_Dice)+dices.index(players[current_turn].Second_Dice)+2) not in roll:
-            roll.append(dices.index(players[current_turn].First_Dice)+dices.index(players[current_turn].Second_Dice)+2)
+        if (dices.index(cp.First_Dice)+dices.index(cp.Second_Dice)+2) not in roll:
+            roll.append(dices.index(cp.First_Dice)+dices.index(cp.Second_Dice)+2)
         else:
             rolldice()
-        players[current_turn].current_roll=(roll[-1])
+        cp.current_roll=(roll[-1])
         rolls[roll[-1]]=current_turn
 
 pg.init()
@@ -113,7 +114,6 @@ screen=pg.display.set_mode((1500,800))
 pg.display.set_caption('MONOPOLY CANT BE PIRATED SO IM MAKING IT')
 screen.fill('white')
 root=pg.transform.rotozoom(pg.image.load('map.jpg').convert_alpha(),0,0.4)
-display_location_bool=False
 map=root
 positions=[(750, 757), (662, 760), (597, 761), (533, 763), (466, 754), 
 (400, 752), (331, 755), (266, 750), (201, 754), (136, 756), (18, 786), (40, 664), 
@@ -121,10 +121,10 @@ positions=[(750, 757), (662, 760), (597, 761), (533, 763), (466, 754),
 (40, 55), (138, 51), (210, 47), (268, 39), (336, 38), (404, 39), (474, 46), (530, 46), 
 (598, 48), (662, 48), (738, 50), (751, 139), (758, 199), (753, 266), (753, 334), (752, 395), 
 (755, 462), (754, 529), (753, 590), (756, 660)]
-property_names=['Go','Mediterranean Avenue','Community Chest','Baltic Avenue','Income Tax','Reading Railroad','Oriental Avenue'
-'Chance 1','Vermont Avenue','Connecticut Avenue','Jail (Visiting)','St Charles Place','Electric Company','States Avenue','Virginia Avenue'
-'Pennsylvania Railroad','St. James Place','Community Chest 2','Tennessee Avenue','New York Avenue','Free Parking','Kentucky Avenue','Chance 2'
-'Indiana Avenue','Illinois Avenue','B&O Railroad','Atlantic Avenue','Ventnor Avenue','Water Works','Marvin Gardens','Go To Jail'
+property_names=['Go','Mediterranean Avenue','Community Chest','Baltic Avenue','Income Tax','Reading Railroad','Oriental Avenue',
+'Chance 1','Vermont Avenue','Connecticut Avenue','Jail (Visiting)','St Charles Place','Electric Company','States Avenue','Virginia Avenue',
+'Pennsylvania Railroad','St. James Place','Community Chest 2','Tennessee Avenue','New York Avenue','Free Parking','Kentucky Avenue','Chance 2',
+'Indiana Avenue','Illinois Avenue','B&O Railroad','Atlantic Avenue','Ventnor Avenue','Water Works','Marvin Gardens','Go To Jail',
 'Pacific Avenue','Noorth Carolina Avenue','Community Chest 3','Pennsylvania Avenue','Short Line','Chance 3','Park PLace','Luxury Tax','Broadwalk']
 nami=pg.image.load('Icons/nami.png').convert_alpha()
 arlong=pg.transform.rotozoom(pg.image.load('Icons/arlong.png').convert_alpha(),0,0.8)
@@ -211,6 +211,7 @@ while True:
                     del draw[True]
                     players.append(New_Player)
                     if player_name_counter==Number_of_Players:
+                        cp=players[current_turn]
                         gamestate=2
                         screen.fill('white')
             elif event.type==pg.MOUSEBUTTONDOWN and event.button==1:
@@ -219,20 +220,23 @@ while True:
                     draw[True]=collision[0]
                 elif cls_button_rect.collidepoint(pg.mouse.get_pos()):
                     Name_Temp=''
-            
+    if (gamestate not in [0,1] and (gamestate==2 and current_turn not in [len(players),len(players)+1])) or gamestate not in [0,1,2]:
+        cp=players[current_turn]
+        #cp stands for current player, short form because it will be used many many times
 
     if gamestate==10:
         screen.fill('white')
         screen.blit(root,(0,0))
         [screen.blit(i.picture,i.pic_rect) for i in players]
         screen.blit(textmake('Click Enter to Roll',50),(900,0))
-        screen.blit(textmake(f'{players[current_turn].display_name}\'s turn!',50),(900,50))
+        screen.blit(textmake(f'{cp.display_name}\'s turn!',50),(900,50))
+        screen.blit(textmake(f'Currently At {property_names[cp.current_position]}',50),(900,700))
         pg.display.update()    
         spacecont()
         rolldice()
-        players[current_turn].move()
-        screen.blit(players[current_turn].First_Dice,(1200,200))
-        screen.blit(players[current_turn].Second_Dice,(1300,200))
+        cp.move()
+        screen.blit(cp.First_Dice,(1200,200))
+        screen.blit(cp.Second_Dice,(1300,200))
         pg.display.update()
         current_turn+=1
         if current_turn==len(players):
@@ -285,6 +289,7 @@ while True:
             Name_Temp=Name_Temp[:15]
         if draw.get(True,None) not in [None,[]] and Name_Temp!='Enter Text Here':
             screen.blit(textmake('Click Enter to Continue',50),(1000,760))
+        
 
     elif gamestate==2: #highest roll
         
@@ -301,10 +306,11 @@ while True:
             current_turn=0
             roll=0
             continue
-            
+        
         elif first_roll!=True:
             rolldice()
             current_turn+=1
+
             
         else:
             first_roll=False

@@ -113,6 +113,7 @@ screen=pg.display.set_mode((1500,800))
 pg.display.set_caption('MONOPOLY CANT BE PIRATED SO IM MAKING IT')
 screen.fill('white')
 root=pg.transform.rotozoom(pg.image.load('map.jpg').convert_alpha(),0,0.4)
+display_location_bool=False
 map=root
 positions=[(750, 757), (662, 760), (597, 761), (533, 763), (466, 754), 
 (400, 752), (331, 755), (266, 750), (201, 754), (136, 756), (18, 786), (40, 664), 
@@ -120,6 +121,11 @@ positions=[(750, 757), (662, 760), (597, 761), (533, 763), (466, 754),
 (40, 55), (138, 51), (210, 47), (268, 39), (336, 38), (404, 39), (474, 46), (530, 46), 
 (598, 48), (662, 48), (738, 50), (751, 139), (758, 199), (753, 266), (753, 334), (752, 395), 
 (755, 462), (754, 529), (753, 590), (756, 660)]
+property_names=['Go','Mediterranean Avenue','Community Chest','Baltic Avenue','Income Tax','Reading Railroad','Oriental Avenue'
+'Chance 1','Vermont Avenue','Connecticut Avenue','Jail (Visiting)','St Charles Place','Electric Company','States Avenue','Virginia Avenue'
+'Pennsylvania Railroad','St. James Place','Community Chest 2','Tennessee Avenue','New York Avenue','Free Parking','Kentucky Avenue','Chance 2'
+'Indiana Avenue','Illinois Avenue','B&O Railroad','Atlantic Avenue','Ventnor Avenue','Water Works','Marvin Gardens','Go To Jail'
+'Pacific Avenue','Noorth Carolina Avenue','Community Chest 3','Pennsylvania Avenue','Short Line','Chance 3','Park PLace','Luxury Tax','Broadwalk']
 nami=pg.image.load('Icons/nami.png').convert_alpha()
 arlong=pg.transform.rotozoom(pg.image.load('Icons/arlong.png').convert_alpha(),0,0.8)
 brook=pg.transform.rotozoom(pg.image.load('Icons/brook.png').convert_alpha(),0,0.8)

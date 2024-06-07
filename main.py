@@ -14,6 +14,7 @@ class User():
         self.pic_rect=self.picture_root.get_rect(center=positions[0])
         self.current_position=0
         self.image_rotation=0
+        self.icon=icons[icon_index]
 
         self.index=len(players)
 
@@ -315,7 +316,7 @@ while True:
             first_roll=False
         for i in range(len(players)):
             screen.blit(textmake(f'{players[i].display_name}: {players[i].current_roll}',70),(150,200+i*100))
-            screen.blit(pg.transform.rotozoom(players[i].picture,0,2),players[i].picture.get_rect(center=(700,220+i*100)))
+            screen.blit(players[i].icon,players[i].picture.get_rect(center=(700,220+i*100-30)))
         pg.display.update()
         spacecont()
         

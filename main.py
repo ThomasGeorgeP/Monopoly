@@ -56,7 +56,7 @@ class User():
             
             time.sleep(0.5)
             pg.display.update()
-        if cp.double_counter==1:
+        if cp.double_counter>=1:
             current_turn-=1
 
 class property():
@@ -93,7 +93,6 @@ def rolldice(position=(1195, 223)):
         
         if dices.index(cp.First_Dice)==dices.index(cp.Second_Dice):
             cp.double_counter+=1
-            
         else:
             cp.double_counter=0
         roll=dices.index(cp.First_Dice)+dices.index(cp.Second_Dice)+2
